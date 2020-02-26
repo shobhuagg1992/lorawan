@@ -179,7 +179,7 @@ LorawanMacHelper::ConfigureForAlohaRegion (Ptr<GatewayLorawanMac> gwMac) const
   Ptr<GatewayLoraPhy> gwPhy =
       gwMac->GetDevice ()->GetObject<LoraNetDevice> ()->GetPhy ()->GetObject<GatewayLoraPhy> ();
 
-  ApplyCommonEuConfigurations (gwMac);
+  ApplyCommonAlohaConfigurations (gwMac);
 
   if (gwPhy) // If cast is successful, there's a GatewayLoraPhy
     {
@@ -293,14 +293,15 @@ LorawanMacHelper::ConfigureForEuRegion (Ptr<GatewayLorawanMac> gwMac) const
       gwPhy->ResetReceptionPaths ();
 
       std::vector<double> frequencies;
-      frequencies.push_back (868.1);
-      frequencies.push_back (868.3);
-      frequencies.push_back (868.5);
+      //frequencies.push_back (868.1);
+      frequencies.push_back (868.3);    //Rx path-1
+      //frequencies.push_back (868.3);  //Rx path-2 uncomment when using two rx paths 
+      //frequencies.push_back (868.5);
 
       std::vector<double>::iterator it = frequencies.begin ();
 
       int receptionPaths = 0;
-      int maxReceptionPaths = 8;
+      int maxReceptionPaths = 1;     // when using one path change to 1 when using 2 paths change to 2
       while (receptionPaths < maxReceptionPaths)
         {
           if (it == frequencies.end ())
@@ -331,12 +332,12 @@ LorawanMacHelper::ApplyCommonEuConfigurations (Ptr<LorawanMac> lorawanMac) const
   //////////////////////
   // Default channels //
   //////////////////////
-  Ptr<LogicalLoraChannel> lc1 = CreateObject<LogicalLoraChannel> (868.1, 0, 5);
-  Ptr<LogicalLoraChannel> lc2 = CreateObject<LogicalLoraChannel> (868.3, 0, 5);
-  Ptr<LogicalLoraChannel> lc3 = CreateObject<LogicalLoraChannel> (868.5, 0, 5);
-  channelHelper.AddChannel (lc1);
+  //Ptr<LogicalLoraChannel> lc1 = CreateObject<LogicalLoraChannel> (868.1, 0, 5);
+  Ptr<LogicalLoraChannel> lc2 = CreateObject<LogicalLoraChannel> (868.3, 0, 5);   //all devices configured to only this channel.
+  //Ptr<LogicalLoraChannel> lc3 = CreateObject<LogicalLoraChannel> (868.5, 0, 5);
+  //channelHelper.AddChannel (lc1);
   channelHelper.AddChannel (lc2);
-  channelHelper.AddChannel (lc3);
+  //channelHelper.AddChannel (lc3);
 
   lorawanMac->SetLogicalLoraChannelHelper (channelHelper);
 
@@ -391,7 +392,8 @@ LorawanMacHelper::SetSpreadingFactorsUp (NodeContainer endDevices, NodeContainer
               highestRxPower = currentRxPower;
             }
         }
-
+       mac->SetDataRate (5);                                 //for fixing the spreading factor
+/*
       // NS_LOG_DEBUG ("Rx Power: " << highestRxPower);
       double rxPower = highestRxPower;
 
@@ -436,6 +438,7 @@ LorawanMacHelper::SetSpreadingFactorsUp (NodeContainer endDevices, NodeContainer
           sfQuantity[6] = sfQuantity[6] + 1;
           // NS_LOG_DEBUG ("sfQuantity[6] = " << sfQuantity[6]);
         }
+       */
 
       /*
 
