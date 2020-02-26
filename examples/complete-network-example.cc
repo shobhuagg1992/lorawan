@@ -35,10 +35,10 @@ using namespace lorawan;
 NS_LOG_COMPONENT_DEFINE ("ComplexLorawanNetworkExample");
 
 // Network settings
-int nDevices = 200;
+int nDevices = 1000;
 int nGateways = 1;
-double radius = 7500;
-double simulationTime = 600;
+double radius = 1753;
+double simulationTime = 60000;
 
 // Channel model
 bool realisticChannelModel = false;
@@ -99,6 +99,7 @@ main (int argc, char *argv[])
   mobility.SetPositionAllocator ("ns3::UniformDiscPositionAllocator", "rho", DoubleValue (radius),
                                  "X", DoubleValue (0.0), "Y", DoubleValue (0.0));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  //////////////////////////////////////////////////////////////////////////////////////////
 
   /************************
    *  Create the channel  *
@@ -106,8 +107,8 @@ main (int argc, char *argv[])
 
   // Create the lora channel object
   Ptr<LogDistancePropagationLossModel> loss = CreateObject<LogDistancePropagationLossModel> ();
-  loss->SetPathLossExponent (3.76);
-  loss->SetReference (1, 7.7);
+  loss->SetPathLossExponent (3.0);
+  loss->SetReference (1, 46.68);
 
   if (realisticChannelModel)
     {
@@ -305,6 +306,14 @@ main (int argc, char *argv[])
   ////////////////
   // Simulation //
   ////////////////
+
+  ///////////////////////////Writing performance to files//////////
+  Time stateSamplePeriod = Seconds (60000);
+  helper.EnablePeriodicDeviceStatusPrinting (endDevices, gateways, "nodeData2.txt", stateSamplePeriod);
+  helper.EnablePeriodicPhyPerformancePrinting (gateways, "phyPerformance.txt", stateSamplePeriod);
+  helper.EnablePeriodicGlobalPerformancePrinting ("globalPerformance2.txt", stateSamplePeriod);
+
+  ////////////////////////////////////////////////////////////////////
 
   Simulator::Stop (appStopTime + Hours (1));
 
